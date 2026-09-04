@@ -5,62 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ExoSeed Africa</title>
     <meta name="description" content="ExoSeed is a digital venture studio focused on developing, deploying, and managing a portfolio of consumer mobile applications. We provide the technical infrastructure and operational support that powers next-generation digital platforms.">
+    <meta name="theme-color" content="#0f172a">
     <meta property="og:title" content="ExoSeed Africa">
     <meta property="og:description" content="ExoSeed is a digital venture studio focused on developing, deploying, and managing a portfolio of consumer mobile applications.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://exoseed.africa">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2310b981'/%3E%3Ctext x='50' y='62' font-family='Arial, sans-serif' font-size='42' font-weight='bold' fill='white' text-anchor='middle'%3EES%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23f9d000'/%3E%3Ctext x='50' y='64' font-family='Arial, sans-serif' font-size='48' font-weight='bold' fill='%230f172a' text-anchor='middle'%3EE%3C/text%3E%3C/svg%3E">
 </head>
 <body>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner">
-            <a href="#" class="logo">
-                <div class="logo-mark">ES</div>
-                <span>ExoSeed</span>
+            <a href="#" class="logo" data-reveal>
+                <img src="assets/logo.png" alt="ExoSeed" class="logo-img">
             </a>
-            <a href="mailto:help@exoseed.africa" class="nav-link">Get in touch</a>
+            <a href="mailto:umarfaruk@exoseed.africa" class="nav-link" data-reveal>Get in touch</a>
         </div>
     </nav>
 
     <!-- Hero -->
     <header class="hero">
         <div class="container">
-            <div class="hero-label">
-                <span class="hero-label-dot"></span>
-                <span>Digital Venture Studio</span>
-            </div>
+            <h1 class="hero-title" data-reveal>ExoSeed Africa</h1>
 
-            <h1 class="hero-title">ExoSeed Africa</h1>
-            
-            <p class="hero-description">
+            <p class="hero-description" data-reveal>
                 ExoSeed is a digital venture studio focused on developing, deploying, and managing a portfolio of consumer mobile applications. We provide the technical infrastructure and operational support that powers next-generation digital platforms.
             </p>
 
-            <div class="hero-cta">
-                <a href="mailto:help@exoseed.africa" class="btn">Get in touch</a>
+            <div class="hero-cta" data-reveal>
+                <a href="mailto:umarfaruk@exoseed.africa" class="btn" id="ctaBtn">Get in touch</a>
             </div>
         </div>
     </header>
-
-    <!-- Supporting text -->
-    <section class="support">
-        <div class="container">
-            <p class="support-text">
-                We operate across Africa, building and supporting platforms designed for real users in emerging markets.
-            </p>
-        </div>
-    </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
             <div>© ExoSeed Africa Limited</div>
             <div>
-                <a href="mailto:help@exoseed.africa">help@exoseed.africa</a>
+                <a href="mailto:umarfaruk@exoseed.africa">umarfaruk@exoseed.africa</a>
             </div>
         </div>
     </footer>
+
+    <script type="module">
+        import { animate, stagger } from "https://cdn.jsdelivr.net/npm/motion@latest/+esm";
+
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!reduced) {
+            // One orchestrated entrance: nav settles first, hero staggers up behind it.
+            animate(
+                "[data-reveal]",
+                { opacity: [0, 1], y: [22, 0] },
+                { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: stagger(0.09, { start: 0.08 }) }
+            );
+
+            // Scroll progress hairline.
+            const bar = document.getElementById("progressBar");
+            const setBar = () => {
+                const max = document.documentElement.scrollHeight - window.innerHeight;
+                bar.style.transform = "scaleX(" + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ")";
+            };
+            window.addEventListener("scroll", setBar, { passive: true });
+            setBar();
+
+            // CTA press feedback.
+            const btn = document.getElementById("ctaBtn");
+            btn.addEventListener("pointerdown", () => animate(btn, { scale: 0.96 }, { duration: 0.15 }));
+            btn.addEventListener("pointerup", () => animate(btn, { scale: 1 }, { duration: 0.3 }));
+            btn.addEventListener("pointerleave", () => animate(btn, { scale: 1 }, { duration: 0.3 }));
+
+            // Safety net: if any reveal never finishes (frozen frame budget,
+            // background tab, headless renderer), release everything to its
+            // natural visible state. The entrance ends by ~1.7s, so 3s never
+            // interrupts a healthy run.
+            setTimeout(() => {
+                document.querySelectorAll("[data-reveal]").forEach((el) => {
+                    el.getAnimations().forEach((a) => {
+                        try { a.cancel(); } catch (e) { /* already gone */ }
+                    });
+                });
+            }, 3000);
+        } else {
+            document.getElementById("progressBar").style.display = "none";
+        }
+    </script>
 </body>
 </html>
